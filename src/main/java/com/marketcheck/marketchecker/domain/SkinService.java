@@ -12,8 +12,12 @@ public class SkinService {
 
     public SkinService(SkinScraper scraper) {this.scraper = scraper;}
 
-    public List<SkinScraper.SkinItem> getSkinsByQuery(String query, int limiter) throws IOException{
-        return scraper.getSkins(query, limiter);
+    public List<SkinScraper.SkinItem> getContainersByQuery(String itemType, String containerName, int limiter) throws IOException{
+        return scraper.getCases(itemType, containerName, limiter);
+    }
+
+    public List<SkinScraper.SkinItem> getSkinsByQuery(String weaponName, String skinName, int limiter) throws IOException{
+        return scraper.getSkins(weaponName,skinName, limiter);
     }
 }
 
