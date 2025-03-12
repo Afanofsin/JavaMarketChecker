@@ -1,6 +1,6 @@
 package com.marketcheck.marketchecker.domain;
 
-import lombok.Data;
+import com.marketcheck.marketchecker.dto.ItemDTO;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -14,8 +14,9 @@ import java.util.List;
 @Component
 public class SkinScraper {
     // For Containers
+    private final int MAX_LIMIT = 50;
 
-    public List<SkinItem> getCases(String findType, String containerName, int limiter) throws IOException {
+    public List<ItemDTO> getCases(String findType, String containerName, int limiter) throws IOException {
         String url = "https://csgoskins.gg/categories/weapon-case";
         //String url = "https://csgoskins.gg/?query=" + containerName.replace(" ", "+");
         System.out.println(url);
@@ -26,11 +27,11 @@ public class SkinScraper {
         return switch (findType) {
             case "All" -> {
                 System.out.println("All selected");
-                yield findCases(doc, 50, null);
+                yield findCases(doc, MAX_LIMIT, null);
             }
             case "One" -> {
                 System.out.println("One selected");
-                yield findCases(doc, 50, containerName);
+                yield findCases(doc, MAX_LIMIT, containerName);
             }
             case "Several" -> {
                 System.out.println("Several selected");
@@ -40,8 +41,8 @@ public class SkinScraper {
         };
     }
 
-    private List<SkinItem> findCases(Document doc, int limiter, String containerName){
-        List<SkinItem> skins = new ArrayList<>();
+    private List<ItemDTO> findCases(Document doc, int limiter, String containerName){
+        List<ItemDTO> skins = new ArrayList<>();
         Elements items = doc.select("div.bg-gray-800.rounded-sm.shadow-md");// "div.bg-gray-800.rounded-sm.shadow-md"
 
         int counter = 0;
@@ -49,11 +50,13 @@ public class SkinScraper {
         if (containerName != null)
         {
             for (Element item : items) {
-                if(counter >= limiter && limiter <= 49) break;
+                if(counter >= limiter && limiter <= MAX_LIMIT-1) break;
 
                 Element containerElement = item.selectFirst("span.block.text-lg.leading-6.truncate.mt-3");//"span.block.text-gray-400.text-sm.truncate"
                 if(containerElement == null) continue;
-                System.out.println("Item " + counter + ": " + containerElement.text().trim());
+
+                //System.out.println("Item " + counter + ": " + containerElement.text().trim());
+
                 if(containerElement.text().trim().equalsIgnoreCase(containerName))
                 {
                     skins.add(processItem(containerElement, counter));
@@ -65,7 +68,7 @@ public class SkinScraper {
         else
         {
             for (Element item : items) {
-                if(counter >= limiter && limiter <= 49) break;
+                if(counter >= limiter && limiter <= MAX_LIMIT-1) break;
 
                 Element containerElement = item.selectFirst("span.block.text-lg.leading-6.truncate.mt-3"); //"span.block.text-gray-400.text-sm.truncate"
                 if(containerElement == null) break;
@@ -78,23 +81,25 @@ public class SkinScraper {
         return skins;
     }
 
-    private SkinItem processItem(Element item, int counter)
+    private ItemDTO processItem(Element item, int counter)
     {
-        String container = item != null ? item.text().trim() : "Unknown case";
+        String container = item != null ? item.text().trim() : "Unknown";
         System.out.println("Item " + counter + ": " + container);
-        return new SkinItem(String.valueOf(counter), container);
+        ItemDTO dto = new ItemDTO();
+        dto.setId(String.valueOf(counter));
+        dto.setName(container);
+
+        return dto;
     }
 
-    public List<SkinItem> getSkins(String weaponName, String skinName, int limiter) throws IOException {
+    public List<ItemDTO> getSkins(String weaponName, String skinName, int limiter) throws IOException {
         String url = "https://csgoskins.gg/?query=" + weaponName.replace(" ", "+")+ "+" + skinName.replace(" ", "+");
         //System.out.println(url);
-
-        //OLD String url = "https://csgoskins.gg/?query=" + query.replace(" ", "+");
 
         Document doc = Jsoup.connect(url)
                 .get();
 
-        List<SkinItem> skins = new ArrayList<>();
+        List<ItemDTO> skins = new ArrayList<>();
         Elements items = doc.select("div.bg-gray-800.rounded-sm.shadow-md");
 
         //System.out.println("Document HTML: " + doc.html());// "div.bg-gray-800.rounded-sm.shadow-md"
@@ -109,32 +114,15 @@ public class SkinScraper {
             String skin = skinElement != null ? skinElement.text().trim() : "Unknown skin";
             //System.out.println(weapon + " | " + skin);
 
-            skins.add(new SkinItem(weapon, skin));
+            ItemDTO dto = new ItemDTO();
+            dto.setId(weapon);
+            dto.setName(skin);
+
+            skins.add(dto);
             counter++;
         }
 
         return skins;
-    }
-
-    @Data
-    public static class SkinItem{
-        private final String weapon;
-        private final String skin;
-        //private final String imageURL;
-
-        public SkinItem(String weapon, String skin){
-            this.weapon = weapon;
-            this.skin = skin;
-            //this.imageURL = imageUrl;
-        }
-
-        @Override
-        public String toString() {
-            return "SkinItem{" +
-                    "weapon='" + weapon + '\'' +
-                    ", skin='" + skin + '\'' +
-                    '}';
-        }
     }
 
 }

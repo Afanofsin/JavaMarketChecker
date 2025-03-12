@@ -5,7 +5,7 @@ package com.marketcheck.marketchecker;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {"com.marketcheck.marketchecker.config", "com.marketcheck.marketchecker.controller", "com.marketcheck.marketchecker.domain", "com.marketcheck.marketchecker.dto", "com.marketcheck.marketchecker.excel"})
 public class MarketCheckerApplication {
 
     public static void main(String[] args) {

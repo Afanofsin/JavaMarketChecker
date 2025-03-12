@@ -9,6 +9,6 @@ public class PageController {
     @GetMapping("/")
     public String home(Model model){
         model.addAttribute("message", "Hello I dont know");
-        return "index";
+        return "base";
     }
 }
