@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Skin Scraper App</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css"/>
+</head>
+<body>
+<header class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand ms-2" href="/">Skin Scraper</a>
+    <div class="collapse navbar-collapse">
+        <ul class="navbar-nav me-auto">
+            <li class="nav-item"><a class="nav-link" href="/search/cases">Cases</a></li>
+            <li class="nav-item"><a class="nav-link" href="/search/skins">Skins</a></li>
+        </ul>
+    </div>
+</header>
+<main class="container">
+    <h2 class="text-center my-4">Steam Prices</h2>
+
+    <table class="table table-dark table-striped align-middle">
+        <tr>
+            <th>Name</th>
+            <th>Success</th>
+            <th>Lowest Price</th>
+            <th>Median Price</th>
+            <th>Volume</th>
+        </tr>
+        <tr th:each="entry : ${prices}">
+            <td th:text="${entry.key}"></td>
+            <td th:text="${entry.value.success}"></td>
+            <td th:text="${entry.value.lowestPrice}"></td>
+            <td th:text="${entry.value.medianPrice}"></td>
+            <td th:text="${entry.value.volume}"></td>
+        </tr>
+    </table>
+    <button id="exportToCaseExcel" class="btn btn-success">Export to Case Excel Sheet</button>
+    <button id="exportToSkinExcel" class="btn btn-success">Export to Skin Excel Sheet</button>
+    <a href="/" class="btn btn-primary">  <i class="bi bi-arrow-left"></i>Back</a>
+</main>
+
+<footer class="text-center py-3 bg-light">
+    <p>&copy; 2023 Skin Scraper App</p>
+</footer>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" defer></script>
+<script>
+    document.getElementById("exportToCaseExcel").addEventListener("click",async function () {
+        let tableRows = document.querySelectorAll("table tr");
+        let data = {};
+
+        // Skip header row (start from index 1)
+        for (let i = 1; i < tableRows.length; i++) {
+            let cells = tableRows[i].querySelectorAll("td");
+            if (cells.length < 5) continue;
+
+            let caseName = String(cells[0].innerText).trim() || "0";
+            let success = String(cells[1].innerText).trim() || "0";
+            let lowestPrice = String(cells[2].innerText).trim() || "0";
+            let medianPrice = String(cells[3].innerText).trim() || "0";
+            let volume = String(cells[4].innerText).trim() || "0";
+            console.log("lowestPrice:", lowestPrice, "medianPrice:", medianPrice, "volume:", volume);
+            if (success === "true") {
+                data[caseName] = {
+                    success: success,
+                    lowest_price: lowestPrice,
+                    median_price: medianPrice,
+                    volume: volume
+                };
+            }
+        }
+        console.log(data);
+
+        if (Object.keys(data).length === 0) {
+            alert("No valid case data found!");
+            return;
+        }
+
+        await fetch("/search/steam/cases/excel", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        })
+            .then(response => response.text())
+            .then(result => alert("Excel Created"))
+            .catch(error => alert("Error: " + error));
+    });
+</script>
+<script>
+    document.getElementById("exportToSkinExcel").addEventListener("click",async function () {
+        let tableRows = document.querySelectorAll("table tr");
+        let data = {};
+
+        // Skip header row (start from index 1)
+        for (let i = 1; i < tableRows.length; i++) {
+            let cells = tableRows[i].querySelectorAll("td");
+            if (cells.length < 5) continue;
+
+            let skinName = String(cells[0].innerText).trim() || "0";
+            let success = String(cells[1].innerText).trim() || "0";
+            let lowestPrice = String(cells[2].innerText).trim() || "0";
+            let medianPrice = String(cells[3].innerText).trim() || "0";
+            let volume = String(cells[4].innerText).trim() || "0";
+            console.log("lowestPrice:", lowestPrice, "medianPrice:", medianPrice, "volume:", volume);
+            if (success === "true") {
+                data[skinName] = {
+                    success: success,
+                    lowest_price: lowestPrice,
+                    median_price: medianPrice,
+                    volume: volume
+                };
+            }
+        }
+        console.log(data);
+
+        if (Object.keys(data).length === 0) {
+            alert("No valid case data found!");
+            return;
+        }
+
+        await fetch("/search/steam/skins/excel", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        })
+            .then(response => response.text())
+            .then(result => alert("Excel Created"))
+            .catch(error => alert("Error: " + error));
+    });
+</script>
+</body>
+</html>
