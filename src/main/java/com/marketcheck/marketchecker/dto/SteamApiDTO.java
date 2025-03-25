@@ -16,4 +16,6 @@ public class SteamApiDTO {
 
     @JsonProperty("median_price")
     private String medianPrice;
+
+
 }

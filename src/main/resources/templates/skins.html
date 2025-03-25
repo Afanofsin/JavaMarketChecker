@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>CS:GO Cases</title>
+    <title>CS:GO Skins</title>
     <link rel="stylesheet" href="/css/styles.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css"/>
 </head>
@@ -18,21 +18,13 @@
 </header>
 
 <main class="container">
-    <h1 class="text-center my-4">Available Weapon Cases</h1>
+    <h1 class="text-center my-4">Available Weapon Skins</h1>
 
-    <form method="get" th:action="@{/search/cases}" class="d-flex justify-content-center">
-        <input type="hidden" name="findType" id="findType" value="All">
-        <input class="form-control w-25" type="search" name="containerName" placeholder="Search cases..." aria-label="Search">
+    <form method="get" th:action="@{/search/skins}" class="d-flex justify-content-center">
+        <input class="form-control w-25" type="search" name="weaponName" placeholder="Search weapon..." aria-label="Weapon Name">
+        <input class="form-control w-25" type="search" name="skinName" placeholder="Search skin..." aria-label="Search">
         <input class="form-control w-25" type="number" name="limiter" placeholder="Limiter..." aria-label="Limiter">
         <div class="btn-group">
-            <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-                <span id="selectedOption">All</span>
-            </button>
-            <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="#" onclick="setFindType('All')">All</a></li>
-                <li><a class="dropdown-item" href="#" onclick="setFindType('One')">One</a></li>
-                <li><a class="dropdown-item" href="#" onclick="setFindType('Several')">Several</a></li>
-            </ul>
             <button type="submit" class="btn btn-primary">
                 Search
             </button>
@@ -41,22 +33,37 @@
 
     <div class="row mt-4 g-3">
         <p th:if="${error}" th:text="${error}"></p>
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-3">
-            <div class="col-md-4" th:each="caseItem : ${cases}">
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-3">
+            <div class="col-md-4" th:each="skinItem : ${skins}">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title" th:text="${caseItem.getName()}">Case Name</h5>
-                        <p class="card-text text-muted" th:text="'ID: ' + ${caseItem.getId()}"></p>
+                        <h5 class="card-title" th:text="${skinItem.getName()}">Skin Name</h5>
+                        <p class="card-text text-muted" th:text="'ID: ' + ${skinItem.getId()}"></p>
                         <div class="form-check">
-                            <input type="checkbox" name="caseIds" th:value= "${caseItem.getId()}" class="form-check-input">
+                            <input type="checkbox" name="caseIds" th:value= "${skinItem.getId()}" class="form-check-input">
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
+        <div class="d-grid gap-2 col-6 mx-auto">
+            <div class="btn-group">
+                <input type="hidden" name="findType" id="findType" value="Factory New">
+                <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split mt-3" data-bs-toggle="dropdown" aria-expanded="false">
+                    <span id="selectedOption">Factory New</span>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="#" onclick="setFindType('Factory New')">Factory New</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="setFindType('Minimal Wear')">Minimal Wear</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="setFindType('Field-Tested')">Field-Tested</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="setFindType('Well-Worn')">Well-Worn</a></li>
+                    <li><a class="dropdown-item" href="#" onclick="setFindType('Battle-Scarred')">Battle-Scarred</a></li>
+                </ul>
+                <button type="button" class="btn btn-primary mt-3" id="submitBtn">
+                    Process Selected Skins
+                </button>
             </div>
-            <div class="d-grid gap-2 col-6 mx-auto">
-                <button type="button" class="btn btn-primary mt-3" id="submitBtn">Process Selected Cases</button>
-            </div>
+        </div>
     </div>
 </main>
 
@@ -69,27 +76,27 @@
 
 <script>
     document.getElementById("submitBtn").addEventListener("click", async function () {
-        let selectedCases = [];
+        let selectedSkins = [];
 
         // Loop through all checked checkboxes
         document.querySelectorAll("input[name='caseIds']:checked").forEach((checkbox) => {
-            selectedCases.push({
+            selectedSkins.push({
                 id: checkbox.value,
                 name: checkbox.closest(".card-body").querySelector(".card-title").innerText
             });
         });
 
         // Debugging: Print JSON before sending
-        console.log("Request Body:", JSON.stringify(selectedCases, null, 2));
+        console.log("Request Body:", JSON.stringify(selectedSkins, null, 2));
 
         // Send JSON request using Fetch API
-        await fetch("/search/steam/cases", {
+        await fetch("/search/steam/skins?wearName=" + document.getElementById("findType").value, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 "Accept": "application/json"
             },
-            body: JSON.stringify(selectedCases) // Convert JS object to JSON
+            body: JSON.stringify(selectedSkins) // Convert JS object to JSON
         })
             .then(response => response.text())
             .then(html => {

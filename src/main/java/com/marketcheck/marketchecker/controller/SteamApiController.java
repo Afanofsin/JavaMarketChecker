@@ -1,51 +1,64 @@
 package com.marketcheck.marketchecker.controller;
 
+import com.marketcheck.marketchecker.db.DbService;
 import com.marketcheck.marketchecker.domain.SteamAPIService;
 
 import com.marketcheck.marketchecker.dto.ItemDTO;
 import com.marketcheck.marketchecker.dto.SteamApiDTO;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
 
-@RestController
-@RequestMapping("/search/api/steam")
+@Controller
+@RequestMapping("/search/steam")
 public class SteamApiController
 {
     private final SteamAPIService steamAPIService;
+    private final DbService dbService;
 
-    public SteamApiController(SteamAPIService steamAPIService)
+    public SteamApiController(SteamAPIService steamAPIService, DbService dbService)
     {
         this.steamAPIService = steamAPIService;
+        this.dbService = dbService;
     }
 
     @PostMapping("/cases")
-    public Map<String, SteamApiDTO> requestContainerPrice(@RequestBody List<ItemDTO> items)
+    public String requestContainerPrice(@RequestBody List<ItemDTO> items, Model model)
     {
         try
         {
-            return steamAPIService.getContainerPrices(items);
+            Map<String, SteamApiDTO> prices = steamAPIService.getContainerPrices(items);
+            model.addAttribute("prices", prices);
+            dbService.saveCases(prices);
         }
         catch (Exception e)
         {
             System.out.println(e.getMessage());
-            return Map.of();
+            model.addAttribute("error", "Failed to request steam prices");
+
         }
+        return "steamResponse";
     }
 
     @PostMapping("/skins")
-    public Map<String, SteamApiDTO> requestSkinPrice(@RequestBody List<ItemDTO> items, @RequestParam String wearName)
+    public String requestSkinPrice(@RequestBody List<ItemDTO> items, @RequestParam String wearName, Model model)
     {
         try
         {
-            return steamAPIService.getSkinsPrices(items, wearName);
+            Map<String, SteamApiDTO> prices = steamAPIService.getSkinsPrices(items, wearName);
+            model.addAttribute("prices", prices);
+            dbService.saveSkins(prices);
         }
         catch (Exception e)
         {
             System.out.println(e.getMessage());
-            return Map.of();
+            model.addAttribute("error", "Failed to request steam prices");
+
         }
+        return "steamResponse";
     }
 
 

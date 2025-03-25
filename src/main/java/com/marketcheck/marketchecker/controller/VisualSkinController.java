@@ -25,7 +25,7 @@ public class VisualSkinController
 
     @GetMapping("/cases")
     public String searchContainersVisual(
-            @RequestParam(required = false, defaultValue = "All") String findType,
+            @RequestParam(required = false, defaultValue = "") String findType,
             @RequestParam(required = false, defaultValue = "") String containerName,
             @RequestParam(defaultValue = "10") int limiter,
             Model model)
@@ -42,5 +42,26 @@ public class VisualSkinController
             System.out.println("Error fetching cases: " + e.getMessage());
         }
         return "cases";
+    }
+
+    @GetMapping("/skins")
+    public String searchSkinsVisual(
+            @RequestParam(required = false, defaultValue = "") String weaponName,
+            @RequestParam(required = false, defaultValue = "") String skinName,
+            @RequestParam(defaultValue = "0") int limiter,
+            Model model)
+    {
+        try
+        {
+            List<ItemDTO> skins = skinService.getSkinsByQuery(weaponName, skinName, limiter);
+            System.out.println("Fetched Skins: " + skins);
+            model.addAttribute("skins", skins);
+        }
+        catch (IOException e)
+        {
+            model.addAttribute("error", "Fail to fetch: " + e.getMessage());
+            System.out.println("Error fetching skins: " + e.getMessage());
+        }
+        return "skins";
     }
 }

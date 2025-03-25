@@ -43,7 +43,13 @@ button:hover {
 
 .card-title {
     font-weight: bold;
+    font-size: 18px;
     color: #333;
+}
+
+.card-text {
+    font-size: 16px;
+    color: #666;
 }
 
 /* Form Elements */
