@@ -17,6 +17,31 @@
         </ul>
     </div>
 </header>
+<main>
+    <p class = "fs-2 fw-bold text-center">User Guide</p>
+    <p class = "fs-5">
+        Here is the API endpoint that return only JSON:<br>
+        /api/search.<br>
+        params = {"weaponName", "skinName", "limiter" - for Weapon Skin Search.<br>
+        params = {"findType", "containerName", "limiter"} - for Container Search.<br>
+    </p>
+    <p class = "fs-5">
+        findType - can be equal to "All", "One", "Several"<br>
+        If "All", other parameters are not needed. If "Several", containerName can be blank. If "One", limiter can be blank<br>
+    </p>
+
+    <p class = "fs-5">
+        Database endpoints:<br>
+        /api/search/allcases<br>
+        /api/search/allskins<br>
+    </p>
+
+    <p class = "fs-5">
+        Visual Endpoints:<br>
+        /search/cases<br>
+        /search/skins<br>
+    </p>
+</main>
 
 <footer class="text-center py-3 bg-light">
     <p>&copy; 2023 Skin Scraper App</p>

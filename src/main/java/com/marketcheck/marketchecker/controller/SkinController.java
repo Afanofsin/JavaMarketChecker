@@ -4,6 +4,7 @@ import com.marketcheck.marketchecker.db.DbService;
 import com.marketcheck.marketchecker.domain.SkinService;
 import com.marketcheck.marketchecker.dto.ItemDTO;
 import com.marketcheck.marketchecker.entities.CaseEntity;
+import com.marketcheck.marketchecker.entities.SkinEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -53,6 +54,17 @@ public class SkinController {
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return List.of(new CaseEntity());
+        }
+    }
+
+    @GetMapping("/allskins")
+    public List<SkinEntity> getAllSkins()
+    {
+        try {
+            return dbService.getAllSkins();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return List.of(new SkinEntity());
         }
     }
 

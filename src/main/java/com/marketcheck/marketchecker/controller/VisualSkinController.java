@@ -18,7 +18,6 @@ public class VisualSkinController
 {
     private final SkinService skinService;
 
-    // Inject SkinService via the constructor
     public VisualSkinController(SkinService skinService) {
         this.skinService = skinService;
     }

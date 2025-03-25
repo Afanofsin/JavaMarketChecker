@@ -11,6 +11,7 @@
     <groupId>com.marketcheck</groupId>
     <artifactId>MarketChecker</artifactId>
     <version>0.0.1-SNAPSHOT</version>
+    <packaging>jar</packaging>
     <name>MarketChecker</name>
     <description>MarketChecker</description>
     <url/>
@@ -81,6 +82,12 @@
         </dependency>
 
         <dependency>
+            <groupId>com.konghq</groupId>
+            <artifactId>unirest-objectmapper-jackson</artifactId>
+            <version>4.2.9</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
@@ -110,6 +117,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
+                    <mainClass>com.marketcheck.marketchecker.MarketCheckerApplication</mainClass>
                     <excludes>
                         <exclude>
                             <groupId>org.projectlombok</groupId>
